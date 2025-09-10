@@ -7,6 +7,7 @@ from secure import Secure
 import structlog
 
 from app.config import settings
+from app.db import init_db
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -27,7 +28,6 @@ structlog.configure(
 logger = structlog.get_logger()
 
 # --- Security Headers ---
-
 secure_headers = Secure()
 
 class SecureHeadersMiddleware(BaseHTTPMiddleware):
@@ -60,6 +60,7 @@ def create_app() -> FastAPI:
     @app.on_event("startup")
     async def startup_event():
         logger.info("🚀 Application startup", environment=settings.ENVIRONMENT)
+        init_db()  # create all tables
 
     @app.on_event("shutdown")
     async def shutdown_event():
