@@ -8,6 +8,7 @@ import structlog
 
 from app.config import settings
 from app.db import init_db
+from app.api import routes_auth
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -33,7 +34,8 @@ secure_headers = Secure()
 class SecureHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request, call_next):
         response = await call_next(request)
-        secure_headers.framework.starlette(response)
+        # Update response headers with secure defaults
+        response.headers.update(secure_headers.headers)
         return response
 
 
@@ -55,6 +57,9 @@ def create_app() -> FastAPI:
 
     # --- Security Headers Middleware ---
     app.add_middleware(SecureHeadersMiddleware)
+
+    # --- Include Routers ---
+    app.include_router(routes_auth.router, prefix="/auth", tags=["Auth"])
 
     # --- Startup/Shutdown events ---
     @app.on_event("startup")

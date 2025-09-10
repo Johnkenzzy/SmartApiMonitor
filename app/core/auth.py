@@ -27,7 +27,7 @@ def create_access_token(
     )
     to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(
-        to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
     )
 
 
@@ -43,7 +43,7 @@ def create_refresh_token(
     )
     to_encode.update({"exp": expire, "type": "refresh"})
     return jwt.encode(
-        to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
     )
 
 
@@ -51,7 +51,7 @@ def decode_token(token: str) -> dict:
     """Safely decode a JWT token, raising a 401 if invalid/expired."""
     try:
         return jwt.decode(
-            token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
         )
     except JWTError:
         raise HTTPException(

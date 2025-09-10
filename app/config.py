@@ -12,8 +12,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = Field("development", env="ENVIRONMENT")  # dev. | staging | prod.
 
     # Security
-    SECRET_KEY: str = Field(..., env="SECRET_KEY")
+    JWT_SECRET_KEY: str = Field(..., env="JWT_SECRET_KEY")
+    JWT_ALGORITHM: str = Field("HS256", env="JWT_ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(60 * 24, env="ACCESS_TOKEN_EXPIRE_MINUTES")
+    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(30, env="REFRESH_TOKEN_EXPIRE_DAYS")
     ALLOWED_HOSTS: list[AnyHttpUrl] = Field(default_factory=list, env="ALLOWED_HOSTS")
 
     # Database
