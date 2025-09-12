@@ -1,4 +1,3 @@
-# app/api/routes_auth.py
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 # from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -14,7 +13,7 @@ from app.core.auth import (
 )
 from app.core.security import hash_password, verify_password
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)

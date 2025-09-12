@@ -7,8 +7,9 @@ from secure import Secure
 import structlog
 
 from app.config import settings
+from app.core.celery_app import celery_app
 from app.db import init_db
-from app.api import routes_auth
+from app.api import routes_auth, routes_celery
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -59,7 +60,8 @@ def create_app() -> FastAPI:
     app.add_middleware(SecureHeadersMiddleware)
 
     # --- Include Routers ---
-    app.include_router(routes_auth.router, prefix="/auth", tags=["Auth"])
+    app.include_router(routes_auth.router)
+    app.include_router(routes_celery.router)
 
     # --- Startup/Shutdown events ---
     @app.on_event("startup")
