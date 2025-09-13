@@ -1,18 +1,17 @@
 from pydantic import BaseModel
 from uuid import UUID
 from datetime import datetime
+from typing import Optional
 
-class MetricBase(BaseModel):
+
+class MetricRead(BaseModel):
+    id: UUID
     monitor_id: UUID
-    response_ms: int
-    status_code: int
-    is_up: bool
-
-class MetricCreate(MetricBase):
-    pass
-
-class MetricRead(MetricBase):
     timestamp: datetime
+    response_ms: Optional[int] = None
+    status_code: Optional[int] = None
+    is_up: bool
+    error_message: Optional[str] = None
 
     class Config:
         from_attributes = True

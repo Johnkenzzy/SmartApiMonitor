@@ -9,7 +9,7 @@ import structlog
 from app.config import settings
 from app.core.celery_app import celery_app
 from app.db import init_db
-from app.api import routes_auth, routes_celery
+from app.api import routes_auth, routes_celery, routes_monitor, routes_metrics
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -62,6 +62,8 @@ def create_app() -> FastAPI:
     # --- Include Routers ---
     app.include_router(routes_auth.router)
     app.include_router(routes_celery.router)
+    app.include_router(routes_monitor.router)
+    app.include_router(routes_metrics.router)
 
     # --- Startup/Shutdown events ---
     @app.on_event("startup")
