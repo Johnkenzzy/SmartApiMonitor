@@ -11,6 +11,7 @@ from sqlalchemy import (
     Index,
 )
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 
 from app.db import Base
 
@@ -30,6 +31,9 @@ class Monitor(Base):
     frequency_sec = Column(Integer, nullable=False, default=60)
     max_latency_ms = Column(Integer, nullable=True)
     is_active = Column(Boolean, nullable=False, default=True)
+    user = relationship("User", back_populates="monitors")
+    last_checked_at = Column(TIMESTAMP, nullable=True)
+    celery_task_id = Column(String, nullable=True, server_default=None,)  # store scheduled Celery task ID
     created_at = Column(
         TIMESTAMP, nullable=False, server_default=text("CURRENT_TIMESTAMP")
     )

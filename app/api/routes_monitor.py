@@ -1,13 +1,17 @@
+# import threading
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from uuid import UUID
+from celery.result import AsyncResult
 
 from app.db import get_db
 from app.models.monitor import Monitor
 from app.schemas.monitor import MonitorCreate, MonitorUpdate, MonitorRead
-from app.core.auth import get_current_user
+from app.utils.auth import get_current_user
 from app.models.user import User
+from app.tasks.monitor import check_single_monitor_task
+# from app.core.scheduler import schedule_task_async
 
 router = APIRouter(prefix="/monitors", tags=["Monitors"])
 
@@ -37,6 +41,16 @@ def create_monitor(
     db.add(monitor)
     db.commit()
     db.refresh(monitor)
+
+    # Schedule first check right after creation
+    task = check_single_monitor_task.apply_async(
+        args=[str(monitor.id)], countdown=monitor.frequency_sec
+    )
+    monitor.celery_task_id = task.id
+
+    db.commit()
+    db.refresh(monitor)
+
     return monitor
 
 
@@ -75,6 +89,14 @@ def update_monitor(
 
     for key, value in payload.dict(exclude_unset=True).items():
         setattr(monitor, key, value)
+
+    # schedule a new one with updated frequency
+    # threading.Thread(target=schedule_task_async, args=(monitor,)).start()
+    task = check_single_monitor_task.apply_async(
+        args=[str(monitor.id)],
+        countdown=monitor.frequency_sec
+    )
+    monitor.celery_task_id = task.id
 
     db.commit()
     db.refresh(monitor)
