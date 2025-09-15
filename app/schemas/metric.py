@@ -11,7 +11,7 @@ class MetricRead(BaseModel):
     response_ms: Optional[int] = None
     status_code: Optional[int] = None
     is_up: bool
-    error_message: Optional[str] = None
+    error: Optional[str] = None
 
     class Config:
         from_attributes = True

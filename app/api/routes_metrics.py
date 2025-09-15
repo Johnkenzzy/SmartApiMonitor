@@ -42,12 +42,34 @@ def get_metric(metric_id: UUID, db: Session = Depends(get_db)):
     return metric
 
 
-@router.delete("/{metric_id}", status_code=204)
-def delete_metric(metric_id: UUID, db: Session = Depends(get_db)):
-    """Delete a metric (usually for cleanup/testing)."""
-    metric = db.query(Metric).filter(Metric.id == metric_id).first()
-    if not metric:
-        raise HTTPException(status_code=404, detail="Metric not found")
-    db.delete(metric)
-    db.commit()
-    return None
+@router.delete("/", status_code=204)
+def delete_metrics(
+    metric_id: UUID | None = Query(None, description="Delete a specific metric by ID"),
+    monitor_id: UUID | None = Query(None, description="Delete all metrics for a specific monitor"),
+    db: Session = Depends(get_db),
+):
+    """
+    Delete metrics. Either `metric_id` OR `monitor_id` must be provided.
+    - If `metric_id` is provided, deletes that metric.
+    - If `monitor_id` is provided, deletes all metrics for that monitor.
+    """
+    if not metric_id and not monitor_id:
+        raise HTTPException(
+            status_code=400,
+            detail="You must provide either 'metric_id' or 'monitor_id'."
+        )
+
+    if metric_id:
+        metric = db.query(Metric).filter(Metric.id == metric_id).first()
+        if not metric:
+            raise HTTPException(status_code=404, detail="Metric not found")
+        db.delete(metric)
+        db.commit()
+        return None
+
+    if monitor_id:
+        deleted_count = db.query(Metric).filter(Metric.monitor_id == monitor_id).delete()
+        db.commit()
+        if deleted_count == 0:
+            raise HTTPException(status_code=404, detail="No metrics found for this monitor")
+        return None
