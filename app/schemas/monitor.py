@@ -41,12 +41,18 @@ class MonitorUpdate(BaseModel):
     max_latency_ms: Optional[int] = Field(None, gt=0)
     is_active: Optional[bool] = None
 
+    # Automatically convert HttpUrl to str before exporting
+    @field_serializer("url")
+    def serialize_url(self, url: HttpUrl, _info):
+        return str(url)
+
 
 class MonitorRead(MonitorBase):
     """Schema for API responses."""
     id: UUID
     user_id: UUID
     is_active: bool
+    last_checked_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
 
