@@ -1,7 +1,7 @@
 import os
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import AnyHttpUrl, Field, field_validator
+from pydantic import AnyHttpUrl, Field, field_validator, EmailStr
 
 
 class Settings(BaseSettings):
@@ -27,6 +27,13 @@ class Settings(BaseSettings):
     # Optional External Services
     REDIS_URL: str | None = Field(None, env="REDIS_URL")
     SENTRY_DSN: str | None = Field(None, env="SENTRY_DSN")
+
+    # Email
+    SMTP_SERVER: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
+    SMTP_USERNAME: EmailStr
+    SMTP_PASSWORD: str
+    EMAIL_FROM: EmailStr = "smart-monitor-alerts@noreply.com"
 
     model_config = SettingsConfigDict(
         env_file=".env",
