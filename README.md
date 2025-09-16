@@ -161,8 +161,9 @@ uvicorn app.main:app --reload
 ***Run Celery workers:***
 ```bash
 celery -A app.core.celery_app.celery_app worker -l info -Q monitoring,alerts
-celery -A app.core.celery_app.celery_app worker --loglevel=info
 ```
+
+---
 
 ## 🔥 Usage
 
