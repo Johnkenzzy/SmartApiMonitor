@@ -1,4 +1,4 @@
-# 📡 Smart API Monitor
+# 📡 Smart API Monitoring Service
 
 A **FastAPI + Celery powered monitoring system** for tracking APIs, websites, and services in real-time.  
 It schedules health checks, records metrics, and sends styled alerts (Email/SMS) when a monitor fails or responds slowly.
@@ -102,7 +102,6 @@ SmartApiMonitor/
 │
 ├── alembic/              # Alembic migrations
 ├── alembic.ini           # Alembic script
-├── tests/                # Pytest suite
 ├── requirements.txt
 └── README.md
 
@@ -110,3 +109,86 @@ SmartApiMonitor/
 
 ---
 
+## ⚡ Setup & Installation
+
+- 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/Johnkenzzy/SmartApiMonitor.git
+cd SmartApiMonitor
+```
+
+- 2️⃣ Create Virtual Environment
+```bash
+python -m venv .venv
+source .venv/bin/activate   # (Linux/Mac)
+.venv\Scripts\activate      # (Windows)
+```
+
+- 3️⃣ Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+- 4️⃣ Setup Environment Variables
+***Create a .env file:***
+```txt
+APP_NAME=Smart API Monitor
+VERSION=1.0.0
+DEBUG=True
+ENVIRONMENT=development
+JWT_SECRET_KEY=SuperSecretKey
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+REFRESH_TOKEN_EXPIRE_DAYS=7
+DATABASE_URL=postgresql+psycopg2://username:password@host:port/db_name
+REDIS_URL=redis://localhost:6379/0
+LOG_LEVEL=INFO
+SMTP_USERNAME=user@gmail.com
+SMTP_PASSWORD=user_password
+```
+
+
+- 5️⃣ Run Database Migrations
+```bash
+alembic upgrade head
+```
+
+- 6️⃣ Start Services
+***Run FastAPI:***
+```bash
+uvicorn app.main:app --reload
+```
+***Run Celery workers:***
+```bash
+celery -A app.core.celery_app.celery_app worker -l info -Q monitoring,alerts
+celery -A app.core.celery_app.celery_app worker --loglevel=info
+```
+
+## 🔥 Usage
+
+**Create a Monitor**
+```txt
+POST /monitors/
+{
+  "name": "Local API",
+  "url": "https://example.com/api",
+  "frequency_sec": 60,
+  "max_latency_ms": 2000
+}
+```
+
+---
+
+## 🤝 Contributing
+
+- Fork this repo
+- Create your feature branch (git checkout -b feature/awesome-feature)
+- Commit changes (git commit -m "Add awesome feature")
+- Push to branch (git push origin feature/awesome-feature)
+- Open a Pull Request
+
+---
+
+## 📜 License
+
+- MIT License © 2025 — Johnkennedy Umeh
