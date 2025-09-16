@@ -39,7 +39,6 @@ It schedules health checks, records metrics, and sends styled alerts (Email/SMS)
 flowchart TD
     subgraph FastAPI
         UI[REST Endpoints]
-        Auth[Auth Router]
         Monitors[Monitors Router]
         Metrics[Metrics Router]
         Alerts[Alerts Router]
