@@ -102,7 +102,6 @@ SmartApiMonitor/
 │
 ├── alembic/              # Alembic migrations
 ├── alembic.ini           # Alembic script
-├── tests/                # Pytest suite
 ├── requirements.txt
 └── README.md
 
