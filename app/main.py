@@ -9,7 +9,8 @@ import structlog
 from app.config import settings
 from app.core.celery_app import celery_app
 from app.db import init_db
-from app.api import routes_auth, routes_celery, routes_monitor, routes_metrics
+from app.core.scheduler import reschedule_all_monitors
+from app.api import routes_auth, routes_celery, routes_monitor, routes_metrics, routes_alert
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -64,12 +65,14 @@ def create_app() -> FastAPI:
     app.include_router(routes_celery.router)
     app.include_router(routes_monitor.router)
     app.include_router(routes_metrics.router)
+    app.include_router(routes_alert.router)
 
     # --- Startup/Shutdown events ---
     @app.on_event("startup")
     async def startup_event():
         logger.info("🚀 Application startup", environment=settings.ENVIRONMENT)
         init_db()  # create all tables
+        reschedule_all_monitors()
 
     @app.on_event("shutdown")
     async def shutdown_event():
