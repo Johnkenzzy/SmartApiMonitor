@@ -90,7 +90,7 @@ async def check_single_monitor(db: Session, monitor):
                 "response_time": metric.response_ms,
                 "is_up": metric.is_up,
                 "error": metric.error,
-                "timestamp": metric.timestamp.isoformat(),
+                "timestamp": metric.timestamp.strftime("%b %d, %Y — %I:%M %p %Z"),
                 "email": monitor.user.email,
                 "subject": "🚨 Monitor DOWN" if not metric.is_up else "⚠️ High Latency",
                 "message": (

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models.user import User
-from app.schemas.user import UserCreate, UserLogin, UserOut, Token
+from app.schemas import UserCreate, UserLogin, UserRead, Token
 from app.utils.auth import (
     create_access_token,
     create_refresh_token,
@@ -16,7 +16,7 @@ from app.utils.security import hash_password, verify_password
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
-@router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+@router.post("/register", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def register(user_in: UserCreate, db: Session = Depends(get_db)):
     """Register a new user."""
     existing_user = db.query(User).filter(User.email == user_in.email).first()
@@ -70,7 +70,7 @@ def refresh_token(refresh_token: str = Body(..., embed=True)):
     }
 
 
-@router.get("/me", response_model=UserOut)
+@router.get("/me", response_model=UserRead)
 def get_me(current_user: User = Depends(get_current_user)):
     """Get current logged-in user profile."""
     return current_user

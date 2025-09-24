@@ -64,34 +64,46 @@ def _send_email_notification(email: str, subject: str, alert_data: dict):
 
         # Build HTML content
         status_color = "#dc2626" if not alert_data.get("is_up") else "#f59e0b"
+        status_text = "❌ DOWN" if not alert_data.get("is_up") else "⚠️ High Latency"
         response_time = alert_data.get("response_time") or "N/A"
         error = alert_data.get("error") or "None"
 
         html = f"""
         <html>
-          <body style="font-family: Arial, sans-serif; background-color:#f9fafb; padding:20px;">
-            <div style="max-width: 600px; margin: auto; background: white; padding: 20px; 
-                        border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
-              
-              <h2 style="color:{status_color}; margin-top: 0;">{subject}</h2>
-              
-              <p style="color:#374151; font-size: 15px;">
-                <b>Monitor:</b> {alert_data.get("monitor_name")}<br>
-                <b>URL:</b> <a href="{alert_data.get("url")}" target="_blank">{alert_data.get("url")}</a><br>
-                <b>Status:</b> {"✅ UP" if alert_data.get("is_up") else "❌ DOWN"}<br>
-                <b>HTTP Code:</b> {alert_data.get("status_code") or "N/A"}<br>
-                <b>Response Time:</b> {response_time} ms<br>
-                <b>Checked at:</b> {alert_data.get("timestamp")}<br>
-                <b>Error:</b> {error}<br>
-              </p>
+          <body style="font-family: Arial, sans-serif; background-color:#f3f4f6; padding:20px;">
+            <div style="max-width: 640px; margin:auto; background:white; border-radius:12px;
+                        overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.08);">
 
-              <p style="margin-top: 20px; font-size: 14px; color:#6b7280;">
-                This is an automated alert from <b>SmartAPI Monitor</b>.
-              </p>
+              <!-- Header Bar -->
+              <div style="background:{status_color}; color:white; padding:16px 24px;">
+                <h2 style="margin:0; font-size:20px; font-weight:600;">{subject}</h2>
+              </div>
+
+              <!-- Content -->
+              <div style="padding:24px; color:#111827; font-size:15px; line-height:1.6;">
+                <p style="margin:0 0 12px;">
+                  🚨 <b>Status:</b> {status_text}<br>
+                  🌐 <b>Monitor:</b> {alert_data.get("monitor_name")}<br>
+                  🔗 <b>URL:</b> <a href="{alert_data.get("url")}" target="_blank" style="color:#2563eb;">
+                    {alert_data.get("url")}
+                  </a><br>
+                  📡 <b>HTTP Code:</b> {alert_data.get("status_code") or "N/A"}<br>
+                  ⏱️ <b>Response Time:</b> {response_time} ms<br>
+                  🕒 <b>Checked at:</b> {alert_data.get("timestamp")}<br>
+                  ⚠️ <b>Error:</b> {error}
+                </p>
+              </div>
+
+              <!-- Footer -->
+              <div style="background:#f9fafb; padding:16px 24px; font-size:13px; color:#6b7280; text-align:center;">
+                🔔 This is an automated alert from <b>SmartAPI Monitor</b>.<br>
+                Please check your service immediately to avoid downtime impact.
+              </div>
             </div>
           </body>
         </html>
         """
+        msg.add_alternative(html, subtype="html")
 
         msg.add_alternative(html, subtype="html")
 

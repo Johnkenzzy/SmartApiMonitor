@@ -21,6 +21,7 @@ class MonitorBase(BaseModel):
         None, gt=0,
         description="Optional max response time (ms) before marking as slow"
     )
+    is_active: Optional[bool] = None
 
     # Automatically convert HttpUrl to str before exporting
     @field_serializer("url")
