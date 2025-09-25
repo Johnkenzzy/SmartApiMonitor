@@ -7,6 +7,7 @@ from uuid import UUID
 from app.db import get_db
 from app.models import Alert, Monitor
 from app.schemas import AlertRead
+from app.models.user import User
 from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/alerts", tags=["Alerts"])
@@ -15,7 +16,7 @@ router = APIRouter(prefix="/alerts", tags=["Alerts"])
 @router.get("/", response_model=List[AlertRead])
 def list_alerts(
     db: Session = Depends(get_db),
-    current_user=Depends(get_current_user),
+    current_user: User =Depends(get_current_user),
     monitor_id: Optional[UUID] = Query(None, description="Filter by monitor ID"),
     channel: Optional[str] = Query(None, description="Filter by channel (email, sms)"),
     limit: int = Query(50, ge=1, le=200, description="Max number of alerts to fetch"),
