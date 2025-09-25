@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from app.db import get_db
 from app.models.metric import Metric
 from app.schemas.metric import MetricRead
+from app.models import User, Monitor
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/metrics", tags=["Metrics"])
 
@@ -14,13 +16,18 @@ router = APIRouter(prefix="/metrics", tags=["Metrics"])
 @router.get("/", response_model=List[MetricRead])
 def list_metrics(
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
     monitor_id: Optional[UUID] = Query(None, description="Filter by monitor ID"),
     is_up: Optional[bool] = Query(None, description="Filter by uptime status"),
     since: Optional[datetime] = Query(None, description="Only return metrics after this timestamp"),
     limit: int = Query(100, le=1000, description="Max number of results to return"),
 ):
     """List metrics with optional filters."""
-    query = db.query(Metric)
+    query = (
+        db.query(Metric)
+        .join(Monitor, Monitor.id == Metric.monitor_id)
+        .filter(Monitor.user_id == current_user.id)
+    )
 
     if monitor_id:
         query = query.filter(Metric.monitor_id == monitor_id)
